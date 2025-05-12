@@ -24,11 +24,25 @@ export const validarSaludo = (req, res) => {
 
 
 export const agregarUsuario = (req, res) => {
-    const { nombre } = req.body;
-    if (!nombre) {
-        return res.status(400).json({ message: "Falta el nombre en el cuerpo del pedido." });
+    let { nombre } = req.body;
+
+    if (!nombre || typeof nombre !== 'string') {
+        return res.status(400).json({ message: "Falta el nombre o es inválido." });
     }
+
+    nombre = nombre.trim().toLowerCase(); 
+
+    if (nombre.length === 0) {
+        return res.status(400).json({ message: "El nombre no puede estar vacío o tener solo espacios." });
+    }
+
+    const yaExiste = usuariosValidos.some(u => u.nombre.toLowerCase() === nombre);
+    if (yaExiste) {
+        return res.json({ message: "El nombre ingresado ya está cargado." });
+    }
+
     usuariosValidos.push({ nombre });
     console.log("Nuevo usuario agregado:", nombre);
     res.json({ message: "Se cargó el nombre correctamente." });
 };
+

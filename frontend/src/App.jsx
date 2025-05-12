@@ -27,24 +27,28 @@ function App() {
     }
   }, [nombre]);
   // agregar un nuevo nombre
-  const handleSubmit = () => {
-    fetch("http://localhost:3000/saludar/saludo/agregar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nombre: otroNombre }),
+const handleSubmit = () => {
+  fetch("http://localhost:3000/saludar/saludo/agregar", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ nombre: otroNombre }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      setRespuestaPost(data.message);
+
+      // Solo agregar al estado si el nombre fue aceptado
+      if (data.message.includes("correctamente")) {
+        setUsuarios((prev) => [...prev, { nombre: otroNombre.trim().toLowerCase() }]);
+        setOtroNombre("");
+      }
     })
-      .then((res) => res.json())
-      .then((data) => {
-        setRespuestaPost(data.message);
-        setUsuarios((prev) => [...prev, {nombre: otroNombre}])
-        setOtroNombre("")
-      })
-      .catch((err) => {
-        console.error("Error al guardar:", err);
-      });
-  };
+    .catch((err) => {
+      console.error("Error al guardar:", err);
+    });
+};
   // mostrar todos los nombres
   useEffect(() => {
     fetch("http://localhost:3000/saludar/nombres")
